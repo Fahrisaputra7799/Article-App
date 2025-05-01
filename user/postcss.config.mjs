@@ -1,5 +1,11 @@
+import tailwindcss from "@tailwindcss/vite";
+
 const config = {
-  plugins: ["@tailwindcss/postcss"],
+  darkMode: 'class',
+  plugins: [
+    "@tailwindcss/postcss",
+    require('@tailwindcss/typography')
+  ],
 };
 
 export default config;

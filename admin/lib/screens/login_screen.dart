@@ -1,8 +1,8 @@
-import 'package:admin/screens/dashboard_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Provider untuk state loading login
 final loginLoadingProvider = StateProvider<bool>((ref) => false);
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -13,34 +13,26 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
-
     ref.read(loginLoadingProvider.notifier).state = true;
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
-      if (!mounted) return;
-      Navigator.pushReplacement(
+      if (mounted) {
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (context) => DashboardScreen()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "Login gagal periksa email dan password anda",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
+      ).showSnackBar(SnackBar(content: Text(e.message ?? 'Login gagal')));
     } finally {
       ref.read(loginLoadingProvider.notifier).state = false;
     }
@@ -51,7 +43,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(loginLoadingProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F3F6), // light grey bg
+      backgroundColor: const Color(0xFFF1F3F6),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -70,7 +62,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             width: 400,
             child: Form(
-              key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -93,7 +84,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 32),
 
                   TextFormField(
-                    controller: emailController,
+                    controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       prefixIcon: Icon(Icons.email_outlined),
@@ -101,14 +92,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty ? 'Email tidak boleh kosong' : null,
                   ),
                   const SizedBox(height: 20),
 
                   TextFormField(
-                    controller: passwordController,
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -117,11 +105,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty
-                                ? 'Password tidak boleh kosong'
-                                : null,
                   ),
                   const SizedBox(height: 28),
 

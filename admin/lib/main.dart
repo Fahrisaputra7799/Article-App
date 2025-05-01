@@ -1,5 +1,8 @@
+import 'package:admin/screens/dashboard_screen.dart';
 import 'package:admin/screens/edit_article_screen.dart';
 import 'package:admin/screens/login_screen.dart';
+import 'package:admin/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,10 +27,45 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
+      title: 'Admin Dashboard',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: AuthGate(),
       routes: {
+        '/login': (context) => const LoginScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
         '/edit-article': (context) => const EditArticleScreen(),
       },
+    );
+  }
+}
+
+
+class AuthGate extends ConsumerWidget {
+   AuthGate({super.key});
+
+  final authStateProvider = StreamProvider<User?>(
+  (ref) => FirebaseAuth.instance.authStateChanges(),
+);
+
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
+    return authState.when(
+      data: (user) {
+        if (user != null) {
+          return const DashboardScreen();
+        } else {
+          return const LoginScreen();
+        }
+      },
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        body: Center(child: Text('Error: $e')),
+      ),
     );
   }
 }

@@ -1,10 +1,17 @@
 import 'package:admin/screens/add_Article_Screen.dart';
-import 'package:admin/screens/edit_article_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
+
+  Future<void> _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +134,11 @@ class DashboardScreen extends StatelessWidget {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () => _logout(context),
+        child: Icon(Icons.logout,color: Colors.blueAccent,),
       ),
     );
   }
