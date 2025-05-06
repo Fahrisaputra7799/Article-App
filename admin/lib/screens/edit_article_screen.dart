@@ -119,6 +119,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
+            backgroundColor: Colors.white,
             title: const Text('Perubahan belum disimpan'),
             content: const Text(
               'Apakah kamu yakin ingin keluar tanpa menyimpan?',
@@ -144,18 +145,20 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        backgroundColor: const Color(0xFFF1F3F6),
         appBar: AppBar(
-          title: const Text('Edit Artikel'),
-          elevation: 2,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          title: const Text('Edit'),
           centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
         ),
         body: Stack(
           children: [
             SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Card(
+                color: Colors.white,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -207,6 +210,8 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -245,6 +250,8 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       textInputAction:
